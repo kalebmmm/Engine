@@ -1,0 +1,5 @@
+name: GameEngine
+main: me.iphony.gameengine.GameEngine
+author: iPhony
+description: Game Engine by iPhony
+version: 1
