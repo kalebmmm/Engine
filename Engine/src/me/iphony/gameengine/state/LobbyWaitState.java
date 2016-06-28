@@ -39,7 +39,7 @@ public class LobbyWaitState extends EngineState
 			public void run()
 			{
 				int online = Bukkit.getOnlinePlayers().size();
-				if (online >= getEngine().getGameManager().getCurrentGame().getMinPlayers())
+				if (getEngine().getPlayerStateManager().getPlayers() >= getEngine().getGameManager().getCurrentGame().getMinPlayers())
 				{
 					if (countdownTime == 0)
 					{

@@ -34,13 +34,11 @@ public class StateManager
 		Bukkit.getPluginManager().registerEvents(state, _engine);
 		_currentState = state;
 		_currentState.start();
-		Bukkit.broadcastMessage("[Game Engine] State set to " + state.getClass().getSimpleName());
 	}
 	
 	public EngineState getCurrentState()
 	{
 		return _currentState;
-		
 	}
 	
 	

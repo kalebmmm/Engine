@@ -36,7 +36,7 @@ public class LobbyState extends EngineState
 		{
 			public void run()
 			{
-				int pl = Bukkit.getOnlinePlayers().size();
+				int pl = getEngine().getPlayerStateManager().getPlayers();
 				int needed = getEngine().getGameManager().getCurrentGame().getMinPlayers();
 				
 				if (pl >= needed)

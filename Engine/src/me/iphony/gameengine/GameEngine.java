@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -13,14 +14,17 @@ import com.alexandeh.glaedr.Glaedr;
 
 import me.iphony.gameengine.game.GameManager;
 import me.iphony.gameengine.game.GameType;
+import me.iphony.gameengine.player.PlayerStateManager;
 import me.iphony.gameengine.scoreboard.ScoreboardManager;
 import me.iphony.gameengine.state.StateManager;
+import me.iphony.gameengine.util.UtilWorld;
 
 public class GameEngine extends JavaPlugin implements Listener {
 
 	GameManager _gameManager;
 	StateManager _stateManager;
 	ScoreboardManager _scoreboardManager;
+	PlayerStateManager _playerStateManager;
 	private HashMap<Object, List<Integer>> _gameTaskManager = new HashMap<Object, List<Integer>>();
 	private GameType[] games = new GameType[] 
 	{
@@ -31,17 +35,23 @@ public class GameEngine extends JavaPlugin implements Listener {
 	
 	public void onEnable()
 	{
+		UtilWorld.init();
+		
 		_gameManager = new GameManager(this);
 		_gameManager.setGames(games);
 		_gameManager.enable();
-		
 		_scoreboardManager = new ScoreboardManager(this);
 		_stateManager = new StateManager(this);
+		_playerStateManager = new PlayerStateManager(this);
 	}
 	
 	public void onDisable()
 	{
+		for (Player pl : Bukkit.getOnlinePlayers())
+			pl.kickPlayer("Server is restarting");
 		
+		UtilWorld.destroy();
+		UtilWorld.removeTempWorld();
 	}
 	
 	public ScoreboardManager getScoreboardManager()
@@ -57,6 +67,11 @@ public class GameEngine extends JavaPlugin implements Listener {
 	public StateManager getStateManager()
 	{
 		return this._stateManager;
+	}
+	
+	public PlayerStateManager getPlayerStateManager()
+	{
+		return this._playerStateManager;
 	}
 	
 	public void runGameTask(Object origin, Runnable runnable, long ticks)

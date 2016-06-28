@@ -1,12 +1,15 @@
 package me.iphony.gameengine.state;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import me.iphony.gameengine.GameEngine;
+import me.iphony.gameengine.util.UtilWorld;
 
 public class EndState extends EngineState
 {
@@ -39,6 +42,13 @@ public class EndState extends EngineState
 	@Override
 	public void stop()
 	{
+		for (Player player : Bukkit.getOnlinePlayers())
+		{
+			player.teleport(Bukkit.getWorld("world").getSpawnLocation());
+		}
+		
+		UtilWorld.destroy();
+		getEngine().getGameManager().selectNextGame();
 	}
 	
 	@EventHandler

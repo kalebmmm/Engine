@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import me.iphony.gameengine.GameEngine;
+import me.iphony.gameengine.util.UtilMessage;
 
 public class IngameState extends EngineState
 {
@@ -19,6 +20,18 @@ public class IngameState extends EngineState
 	@Override
 	public void start()
 	{
+		getEngine().runRepeatingGameTask(this, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (getEngine().getPlayerStateManager().getPlayers() < 2)
+				{
+					UtilMessage.broadcast("&c&lStopping game: Not enough players!");
+					getEngine().getStateManager().setState(new EndState(getEngine()));
+				}
+			}
+		}, 20);
 	}
 
 	@Override

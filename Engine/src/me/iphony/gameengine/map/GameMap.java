@@ -16,28 +16,28 @@ public class GameMap
 {
 
 	public World Map;
-	public HashMap<String, List<Location>> Locations;
+	public HashMap<String, List<Location>> Locations = new HashMap<String, List<Location>>();
+	public Location SpectatorSpawn;
 	public String Name = "???";
 	public String Author = "???";
 	
-	public GameMap(File directory, GameType gametype)
+	public GameMap(World map, File configuration, GameType gametype)
 	{
-		parseYaml(directory);
+		this.Map = map;
+		parseYaml(configuration);
 	}
 	
-	private void parseYaml(File dir)
+	private void parseYaml(File conf)
 	{
-		File file = new File(dir + File.separator + "Map.yml");
-		
-		if (file == null || !file.exists())
+		if (conf == null || !conf.exists())
 			throw new EngineExeption("Map.yml not found!");
 		
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(conf);
 		
 		this.Name = config.getString("Name");
 		this.Author = config.getString("Author");
 
-		for (String spawn : config.getStringList("spawns"))
+		for (String spawn : config.getStringList("Spawns"))
 		{
 			String[] parts = spawn.split(";");
 			
@@ -57,6 +57,19 @@ public class GameMap
 			
 			Locations.get(parts[0]).add(loc);
 		}
+		
+		String[] parts = config.getString("SpectatorSpawn").split(";");
+		
+		int x,y,z;
+		float yaw,pitch;
+		
+		x = Integer.parseInt(parts[0]);
+		y = Integer.parseInt(parts[1]);
+		z = Integer.parseInt(parts[2]);
+		yaw = Float.parseFloat(parts[3]);
+		pitch = Float.parseFloat(parts[4]);
+		
+		SpectatorSpawn = new Location(Map, x, y, z, yaw, pitch);
 		
 	}
 	
