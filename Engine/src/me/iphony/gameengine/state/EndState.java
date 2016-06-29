@@ -19,7 +19,7 @@ public class EndState extends EngineState
 		super(engine);
 	}
 	
-	int timeUntilLobby = 5;
+	int timeUntilLobby = 10;
 
 	@Override
 	public void start()

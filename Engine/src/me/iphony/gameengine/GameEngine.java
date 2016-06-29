@@ -28,7 +28,7 @@ public class GameEngine extends JavaPlugin implements Listener {
 	private HashMap<Object, List<Integer>> _gameTaskManager = new HashMap<Object, List<Integer>>();
 	private GameType[] games = new GameType[] 
 	{
-		GameType.EXAMPLE
+		GameType.KILL
 	};
 	
 	Glaedr glaedr;

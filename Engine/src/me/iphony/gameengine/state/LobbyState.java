@@ -30,7 +30,10 @@ public class LobbyState extends EngineState
 	public void start()
 	{
 		for (Player pl : Bukkit.getOnlinePlayers())
+		{
 			scoreboard(pl);
+			pl.getInventory().clear();
+		}
 		
 		getEngine().runRepeatingGameTask(this, new Runnable()
 		{

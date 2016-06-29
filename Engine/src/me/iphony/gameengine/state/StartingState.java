@@ -26,11 +26,21 @@ public class StartingState extends EngineState
 	@Override
 	public void start()
 	{
+		
 		//TODO WIP
 		GameMap map = getEngine().getGameManager().getGameMap();
+		
+		// 0 1 2 counting instead of 1 2 3
+		int spawns = map.Locations.get("yellow").size() - 1;
+		if (spawns == -1) return;
+		
+		int i = 0; // Note, have extra spawns in case of more players than spawns. It rotates though.
 		for (Player player : Bukkit.getOnlinePlayers())
 		{
-			player.teleport(map.Locations.get("yellow").get(0));
+			player.teleport(map.Locations.get("yellow").get(i));
+			player.getInventory().clear();
+			i++;
+			if (i > spawns) i = 0;
 		}
 		
 		getEngine().runRepeatingGameTask(this, new Runnable()

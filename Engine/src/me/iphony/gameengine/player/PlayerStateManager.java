@@ -7,16 +7,20 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.iphony.gameengine.GameEngine;
+import me.iphony.gameengine.event.StateChangeEvent;
 import me.iphony.gameengine.game.GameManager;
 import me.iphony.gameengine.state.EndState;
 import me.iphony.gameengine.state.EngineState;
 import me.iphony.gameengine.state.IngameState;
+import me.iphony.gameengine.state.LobbyState;
 import me.iphony.gameengine.state.StartingState;
 
 public class PlayerStateManager implements Listener
@@ -41,6 +45,8 @@ public class PlayerStateManager implements Listener
 	
 	public void setState(Player player, PlayerState state)
 	{
+		System.out.println("[State] Setting " + player.getName() + " to " + state.getClass().getSimpleName());
+		
 		if (stateMap.get(player) != null)
 			HandlerList.unregisterAll(stateMap.get(player));
 		
@@ -92,9 +98,10 @@ public class PlayerStateManager implements Listener
 		return players;
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(PlayerJoinEvent e)
 	{
+		e.getPlayer().getInventory().clear();
 		EngineState current = getEngine().getStateManager().getCurrentState();
 		if (current instanceof IngameState || current instanceof StartingState || current instanceof EndState)
 		{
@@ -115,5 +122,30 @@ public class PlayerStateManager implements Listener
 		stateMap.remove(e.getPlayer());
 	}
 	
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent e)
+	{
+		setState(e.getPlayer(), new PlayerSpectatingState(getEngine(), e.getPlayer()));
+	}
+	
+	@EventHandler
+	public void onStateChange(StateChangeEvent e)
+	{
+		if (e.getNewState() instanceof StartingState)
+		{
+			for (Player player : Bukkit.getOnlinePlayers())
+			{
+				setState(player, new PlayerIngameState(getEngine(), player));
+			}
+		}
+		
+		if (e.getNewState() instanceof LobbyState)
+		{
+			for (Player player : Bukkit.getOnlinePlayers())
+			{
+				setState(player, new PlayerLobbyState(getEngine(), player));
+			}
+		}
+	}
 	
 }

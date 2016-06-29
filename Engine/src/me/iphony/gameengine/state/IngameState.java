@@ -6,6 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 import me.iphony.gameengine.GameEngine;
 import me.iphony.gameengine.util.UtilMessage;
@@ -51,11 +52,10 @@ public class IngameState extends EngineState
 					&& !getEngine().getGameManager().getCurrentGame().pvp)
 				e.setCancelled(true);
 			
-			if (ee.getEntity().getType() != EntityType.PLAYER 
-					&& ee.getDamager().getType() == EntityType.PLAYER 
+			if (ee.getEntity().getType() == EntityType.PLAYER 
+					&& ee.getDamager().getType() != EntityType.PLAYER 
 					&& !getEngine().getGameManager().getCurrentGame().hurtByEntities)
 				e.setCancelled(true);
-			
 		}
 		
 		if (e.getEntity().getType() != EntityType.PLAYER
@@ -70,5 +70,13 @@ public class IngameState extends EngineState
 		if (e.getEntity().getType() == EntityType.PLAYER 
 				&& getEngine().getGameManager().getCurrentGame().invincible)
 			e.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onHunger(FoodLevelChangeEvent e)
+	{
+		if (e.getEntity().getType() == EntityType.PLAYER
+				&& !getEngine().getGameManager().getCurrentGame().hunger)
+			e.setFoodLevel(20);
 	}
 }

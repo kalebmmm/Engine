@@ -29,7 +29,6 @@ public class PlayerSpectatingState extends PlayerState
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setAllowFlight(true);
 		player.setFlying(true);
-		player.teleport(engine.getGameManager().getGameMap().SpectatorSpawn);
 		
 		for(PotionEffect effect : player.getActivePotionEffects())
 		    player.removePotionEffect(effect.getType());
@@ -38,7 +37,6 @@ public class PlayerSpectatingState extends PlayerState
 	@EventHandler
 	public void onHunger(FoodLevelChangeEvent e)
 	{
-		System.out.println("Hungry");
 		if (e.getEntity() == getPlayer())
 			e.setFoodLevel(20);
 	}
