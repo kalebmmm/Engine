@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -22,6 +23,7 @@ import me.iphony.gameengine.state.EngineState;
 import me.iphony.gameengine.state.IngameState;
 import me.iphony.gameengine.state.LobbyState;
 import me.iphony.gameengine.state.StartingState;
+import net.md_5.bungee.api.ChatColor;
 
 public class PlayerStateManager implements Listener
 {
@@ -36,6 +38,39 @@ public class PlayerStateManager implements Listener
 		_engine = engine;
 		_manager = _engine.getGameManager();
 		Bukkit.getPluginManager().registerEvents(this, engine);
+		runInvisTask();
+	}
+	
+	public void runInvisTask()
+	{
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(getEngine(), new Runnable()
+		{
+			public void run()
+			{
+				for (Player players : getPlayerList())
+				{
+					for (Player spectators : getSpectatorList())
+					{
+						players.hidePlayer(spectators);
+					}
+					
+					for (Player player : getPlayerList())
+					{
+						players.showPlayer(player);
+					}
+					
+				}
+				
+				for (Player spectator : getSpectatorList())
+				{
+					for (Player spectators : getSpectatorList())
+						spectator.hidePlayer(spectators);
+					
+					for (Player player : getPlayerList())
+						spectator.showPlayer(player);
+				}
+			}
+		}, 0, 5);
 	}
 	
 	public GameEngine getEngine()
@@ -146,6 +181,12 @@ public class PlayerStateManager implements Listener
 				setState(player, new PlayerLobbyState(getEngine(), player));
 			}
 		}
+	}
+	
+	@EventHandler
+	public void onAsyncChat(AsyncPlayerChatEvent e)
+	{
+		e.setFormat(ChatColor.GRAY + "%s » " + ChatColor.WHITE + "%s");
 	}
 	
 }

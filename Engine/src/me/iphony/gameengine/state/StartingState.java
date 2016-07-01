@@ -57,11 +57,16 @@ public class StartingState extends EngineState
 				
 				if (countdown == 0)
 				{
+					UtilMessage.broadcast("&a&lGooo!");
 					getEngine().getGameManager().startGame();
 					getEngine().getStateManager().setState(new IngameState(getEngine()));
 				}
-				
-				else countdown--;
+				else 
+				{
+					if (countdown <= 5)
+						UtilMessage.broadcast("&6Start in: &e" + countdown);
+					countdown--;
+				}
 			}
 		}, 20);
 	}

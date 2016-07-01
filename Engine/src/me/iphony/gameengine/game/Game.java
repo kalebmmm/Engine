@@ -4,13 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.iphony.gameengine.GameEngine;
 import me.iphony.gameengine.util.UtilMessage;
@@ -20,12 +15,14 @@ public abstract class Game implements Listener {
 	GameEngine _engine;
 	GameType _type;
 	int _minPlayers;
+	GameListener _listener;
 	
 	public Game(GameEngine engine, GameType type, int minPlayers)
 	{
 		_engine = engine;
 		_type = type;
 		_minPlayers = minPlayers;
+		_listener = new GameListener(this, getEngine());
 	}
 	
 	public GameType getGameType()
@@ -45,11 +42,13 @@ public abstract class Game implements Listener {
 	
 	public void start() 
 	{
+		_listener.start();
 		onStart();
 	}
 
 	public void stop()
 	{
+		_listener.stop();
 		win();
 		onStop();
 	}
@@ -73,41 +72,8 @@ public abstract class Game implements Listener {
 	public boolean deathDrops = false;
 	public WinType winType = WinType.LAST_MAN_STANDING;
 	
-	private List<String> deathOrder = new ArrayList<String>();
-	private HashMap<String, Integer> kills = new HashMap<String, Integer>();
-	
-	@EventHandler
-	public void onDeath(PlayerDeathEvent e)
-	{
-		deathOrder.add(e.getEntity().getName());
-		e.getEntity().spigot().respawn();
-		
-		if (!deathDrops)
-			e.getDrops().clear();
-		
-		int playersLeft = getEngine().getPlayerStateManager().getPlayers();
-		if (playersLeft == 1 && winType == WinType.LAST_MAN_STANDING)
-			getEngine().getGameManager().stopGame();
-	}
-	
-	@EventHandler
-	public void onRespawn(PlayerRespawnEvent e)
-	{
-		e.setRespawnLocation(getEngine().getGameManager().getGameMap().SpectatorSpawn);
-	}
-	
-	@EventHandler
-	public void onDamage(EntityDamageByEntityEvent e)
-	{
-		if (e.getDamager().getType() == EntityType.PLAYER && e.getEntity().getType() == EntityType.PLAYER)
-		{
-			Player attacker = (Player) e.getDamager();
-			Player attacked = (Player) e.getEntity();
-			
-			if (attacked.getHealth() - e.getFinalDamage() <= 0)
-				giveKill(attacker);
-		}
-	}
+	public List<String> deathOrder = new ArrayList<String>();
+	public HashMap<String, Integer> kills = new HashMap<String, Integer>();
 	
 	public void giveKill(Player attacker)
 	{

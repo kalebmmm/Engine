@@ -15,6 +15,7 @@ import com.alexandeh.glaedr.scoreboards.PlayerScoreboard;
 
 import me.iphony.gameengine.GameEngine;
 import me.iphony.gameengine.event.StateChangeEvent;
+import me.iphony.gameengine.state.EndState;
 
 public class ScoreboardManager implements Listener
 {
@@ -42,6 +43,9 @@ public class ScoreboardManager implements Listener
 	@EventHandler
 	public void clear(StateChangeEvent e)
 	{
+		if (e.getNewState() instanceof EndState)
+			return; // Keep scoreboard after game
+		
 		for (Player player : Bukkit.getOnlinePlayers())
 			resetScoreboard(player);
 	}
